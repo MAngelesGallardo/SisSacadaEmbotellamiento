@@ -82,7 +82,7 @@ CONTACT_TAG_SENSOR = 0x0
 # World code
 #########################################
 # "Constants"
-WORLD_SCREEN_WIDTH  = 600
+WORLD_SCREEN_WIDTH  = 900
 WORLD_SCREEN_HEIGHT = 350
 FPS                 = 50.0
 
@@ -113,23 +113,39 @@ def add_ball(space):
     body.position = x, 410
 
     shape = pymunk.Circle(body, radius, (0,0))
-    shape.collision_type = 0x6 #liquid
+    shape.collision_type = 0x6
     space.add(body, shape)
 
     return shape
 
-def draw_ball(screen, ball, color=THECOLORS['blue']):
+def add_ball2():
+    mass    = 0.01
+    radius  = 8
+    inertia = pymunk.moment_for_circle(mass, 0, radius, (0,0))
+    x = random.randint(181,182)
+
+    body = pymunk.Body(mass, inertia)
+    body._bodycontents.v_limit = 120
+    body._bodycontents.h_limit = 1
+    body.position = x, 410
+
+    shape = pymunk.Circle(body, radius, (0,0))
+    shape.collision_type = 0x5
+
+    return shape
+
+def draw_ball(screen, ball, color=THECOLORS['brown']):
     p = int(ball.body.position.x), 600-int(ball.body.position.y)
-    pygame.draw.circle(screen, color, p, int(ball.radius), 2)
+    pygame.draw.circle(screen, color, p, int(ball.radius), 4)
     
 def add_bottle_in_sensor(space):
-    radius = 2
+    radius = 4
 
     body = pymunk.Body()
     body.position = (40, 300)
 
     shape = pymunk.Circle(body, radius, (0, 0))
-    shape.collision_type = 0x8 # 'bottle_in'
+    shape.collision_type = 0x8 
     space.add(shape)
 
     return shape
@@ -141,7 +157,7 @@ def add_level_sensor(space):
     body.position = (155, 380)
 
     shape = pymunk.Circle(body, radius, (0, 0))
-    shape.collision_type = 0x5 # level_sensor
+    shape.collision_type = 0x5
     space.add(shape)
 
     return shape
@@ -219,10 +235,10 @@ def draw_polygon(screen, shape):
     for p in points:
         fpoints.append(to_pygame(p))
 
-    pygame.draw.polygon(screen, THECOLORS['black'], fpoints)
+    pygame.draw.polygon(screen, THECOLORS['dimgray'], fpoints)
 
 
-def draw_lines(screen, lines, color=THECOLORS['dodgerblue4']):
+def draw_lines(screen, lines, color=THECOLORS['black']):
     """Draw the lines"""
     for line in lines:
         body = line.body
@@ -244,7 +260,7 @@ def level_ok(space, arbiter, *args, **kwargs):
 
     log.debug("Level reached")
 
-    level['server'].write(LEVEL_RO_ADDR + LEVEL_TAG_SENSOR, 1)  # Level Sensor Hit, Bottle Filled
+    level['server'].write(LEVEL_RO_ADDR + LEVEL_TAG_SENSOR, 1) #fail
 
     return False
 
@@ -280,7 +296,7 @@ def runWorld():
 
     screen = pygame.display.set_mode((WORLD_SCREEN_WIDTH, WORLD_SCREEN_HEIGHT))
 
-    pygame.display.set_caption("Bottle-Filling Factory - World View - VirtuaPlant")
+    pygame.display.set_caption("Sistema de embotellado")
     clock = pygame.time.Clock()
 
     running = True
@@ -345,7 +361,7 @@ def runWorld():
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 running = False
 
-        screen.fill(THECOLORS["white"])
+        screen.fill(THECOLORS["aliceblue"])
         
         # Manage plc
         # Read remote/local variables
@@ -365,6 +381,7 @@ def runWorld():
             tag_nozzle = 1
         else:
             tag_nozzle = 0
+
 
         # Write remote/local variables
         plc['motor'].write(MOTOR_RW_ADDR + MOTOR_TAG_RUN, tag_motor)
@@ -419,9 +436,9 @@ def runWorld():
         # Draw the level sensor
         draw_ball(screen, level_sensor, THECOLORS['red'])
 
-        title           = fontMedium.render(str("Bottle-filling factory"), 1, THECOLORS['deepskyblue'])
-        name            = fontBig.render(str("VirtuaPlant"), 1, THECOLORS['gray20'])
-        instructions    = fontSmall.render(str("(press ESC to quit)"), 1, THECOLORS['gray'])
+        title           = fontMedium.render(str("Llenado de botellas"), 1, THECOLORS['deepskyblue'])
+        name            = fontBig.render(str("Sistema de embotellado"), 1, THECOLORS['gray20'])
+        instructions    = fontSmall.render(str("(presione ESC)"), 1, THECOLORS['gray'])
 
         screen.blit(title, (10, 40))
         screen.blit(name, (10, 10))
@@ -436,11 +453,8 @@ def runWorld():
 
 def main():
     global plc, motor, nozzle, level, contact
-
-    # Initialise simulator
     reactor.callInThread(runWorld)
-
-    # Initialise motor, nozzle, level and contact components
+    
     motor['server'] = Server(MOTOR_SERVER_IP, port=MOTOR_SERVER_PORT)
     reactor.listenTCP(MOTOR_SERVER_PORT, motor['server'], interface = MOTOR_SERVER_IP,)
 

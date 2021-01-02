@@ -31,7 +31,7 @@ class HMIWindow(Gtk.Window):
         self.connectionStatusValue.set_markup("<span weight='bold' foreground='red'>OFFLINE</span>")
 
     def __init__(self, address, port):
-        Gtk.Window.__init__(self, title="Bottle-filling factory - HMI - VirtuaPlant")
+        Gtk.Window.__init__(self, title="LLenado de botellas")
 
         self.set_border_width(HMI_SCREEN_WIDTH)
         
@@ -47,47 +47,47 @@ class HMIWindow(Gtk.Window):
 
         # Main title label
         label = Gtk.Label()
-        label.set_markup("<span weight='bold' size='x-large'>Bottle-filling process status</span>")
+        label.set_markup("<span weight='bold' size='x-large'>Control del sistema de embotellado</span>")
         grid.attach(label, 0, elementIndex, 2, 1)
         elementIndex += 1
 
         # Bottle in position label
-        bottlePositionLabel = Gtk.Label("Bottle in position")
+        bottlePositionLabel = Gtk.Label("Botella en posicion")
         bottlePositionValue = Gtk.Label()
         grid.attach(bottlePositionLabel, 0, elementIndex, 1, 1)
         grid.attach(bottlePositionValue, 1, elementIndex, 1, 1)
         elementIndex += 1
 
         # Nozzle status label
-        nozzleStatusLabel = Gtk.Label("Nozzle Status")
+        nozzleStatusLabel = Gtk.Label("Boquilla")
         nozzleStatusValue = Gtk.Label()
         grid.attach(nozzleStatusLabel, 0, elementIndex, 1, 1)
         grid.attach(nozzleStatusValue, 1, elementIndex, 1, 1)
         elementIndex += 1
 
         # Motor status label
-        motorStatusLabel = Gtk.Label("Motor Status")
+        motorStatusLabel = Gtk.Label("Estado del motor")
         motorStatusValue = Gtk.Label()
         grid.attach(motorStatusLabel, 0, elementIndex, 1, 1)
         grid.attach(motorStatusValue, 1, elementIndex, 1, 1)
         elementIndex += 1
 
         # Level hit label
-        levelHitLabel = Gtk.Label("Level Hit")
+        levelHitLabel = Gtk.Label("Etiqueta de nivel")
         levelHitValue = Gtk.Label()
         grid.attach(levelHitLabel, 0, elementIndex, 1, 1)
         grid.attach(levelHitValue, 1, elementIndex, 1, 1)
         elementIndex += 1
 
         # Process status
-        processStatusLabel = Gtk.Label("Process Status")
+        processStatusLabel = Gtk.Label("Estado del proceso")
         processStatusValue = Gtk.Label()
         grid.attach(processStatusLabel, 0, elementIndex, 1, 1)
         grid.attach(processStatusValue, 1, elementIndex, 1, 1)
         elementIndex += 1
 
         # Connection status
-        connectionStatusLabel = Gtk.Label("Connection Status")
+        connectionStatusLabel = Gtk.Label("Estado de la conexion")
         connectionStatusValue = Gtk.Label()
         grid.attach(connectionStatusLabel, 0, elementIndex, 1, 1)
         grid.attach(connectionStatusValue, 1, elementIndex, 1, 1)
@@ -106,7 +106,6 @@ class HMIWindow(Gtk.Window):
 
         # VirtuaPlant branding
         virtuaPlant = Gtk.Label()
-        virtuaPlant.set_markup("<span size='small'>VirtuaPlant - HMI</span>")
         grid.attach(virtuaPlant, 0, elementIndex, 2, 1)
 
         # Attach Value Labels
@@ -131,33 +130,33 @@ class HMIWindow(Gtk.Window):
             regs = self.client.readln(PLC_RO_ADDR, 17)
 
             if regs[PLC_TAG_CONTACT] == 1:
-                self.bottlePositionValue.set_markup("<span weight='bold' foreground='green'>YES</span>")
+                self.bottlePositionValue.set_markup("<span weight='bold' foreground='green'>Si</span>")
             else:
-                self.bottlePositionValue.set_markup("<span weight='bold' foreground='red'>NO</span>")
+                self.bottlePositionValue.set_markup("<span weight='bold' foreground='red'>No</span>")
 
             if regs[PLC_TAG_LEVEL] == 1:
-                self.levelHitValue.set_markup("<span weight='bold' foreground='green'>YES</span>")
+                self.levelHitValue.set_markup("<span weight='bold' foreground='green'>Si</span>")
             else:
-                self.levelHitValue.set_markup("<span weight='bold' foreground='red'>NO</span>")
+                self.levelHitValue.set_markup("<span weight='bold' foreground='red'>No</span>")
 
             if regs[PLC_TAG_MOTOR] == 1:
-                self.motorStatusValue.set_markup("<span weight='bold' foreground='green'>ON</span>")
+                self.motorStatusValue.set_markup("<span weight='bold' foreground='green'>Moviendose</span>")
             else:
-                self.motorStatusValue.set_markup("<span weight='bold' foreground='red'>OFF</span>")
+                self.motorStatusValue.set_markup("<span weight='bold' foreground='red'>Quieto</span>")
 
             if regs[PLC_TAG_NOZZLE] == 1:
-                    self.nozzleStatusValue.set_markup("<span weight='bold' foreground='green'>OPEN</span>")
+                    self.nozzleStatusValue.set_markup("<span weight='bold' foreground='green'>Abierto</span>")
             else:
-                self.nozzleStatusValue.set_markup("<span weight='bold' foreground='red'>CLOSED</span>")
+                self.nozzleStatusValue.set_markup("<span weight='bold' foreground='red'>Cerrado</span>")
 
             regs = self.client.readln(PLC_RW_ADDR, 17)
 
             if regs[PLC_TAG_RUN] == 1:
-                self.processStatusValue.set_markup("<span weight='bold' foreground='green'>RUNNING</span>")
+                self.processStatusValue.set_markup("<span weight='bold' foreground='green'>Corriendo</span>")
             else:
-                self.processStatusValue.set_markup("<span weight='bold' foreground='red'>STOPPED</span>")
+                self.processStatusValue.set_markup("<span weight='bold' foreground='red'>Detenido</span>")
 
-            self.connectionStatusValue.set_markup("<span weight='bold' foreground='green'>ONLINE</span>")
+            self.connectionStatusValue.set_markup("<span weight='bold' foreground='green'>En curso</span>")
 
         except ConnectionException:
             if not self.client.connect():
