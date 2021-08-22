@@ -260,7 +260,7 @@ def level_ok(space, arbiter, *args, **kwargs):
 
     log.debug("Level reached")
 
-    level['server'].write(LEVEL_RO_ADDR + LEVEL_TAG_SENSOR, 1) #fail
+    level['server'].write(LEVEL_RO_ADDR + LEVEL_TAG_SENSOR, 1)
 
     return False
 
@@ -304,28 +304,28 @@ def runWorld():
     space = pymunk.Space()
     space.gravity = (0.0, -900.0)
 
-    # Contact sensor with bottle bottom
+    # Sensor de contacto con el fondo de la botella
     space.add_collision_handler(0x1, 0x2, begin=no_collision)
 
-    # Contact sensor with bottle left side
+    # Sensor de contacto con la botella al lado izquierdo
     space.add_collision_handler(0x1, 0x3, begin=no_bottle)
 
-    # Contact sensor with bottle right side
+    # Sensor de contacto con la botella al lado derecho
     space.add_collision_handler(0x1, 0x4, begin=bottle_in_place)
 
-    # Contact sensor with ground
+    # Sensor de contacto con el suelo
     space.add_collision_handler(0x1, 0x7, begin=no_collision)
 
-    # Level sensor with bottle left side
+    # Sensor de nivel con la botella al lado izquierdo
     space.add_collision_handler(0x5, 0x3, begin=no_level)
 
-    # Level sensor with bottle right side
+    # Sensor de nivel con la botella al lado derecho
     space.add_collision_handler(0x5, 0x4, begin=no_collision)
 
-    # Level sensor with water
+    # Sensor de nivel del agua
     space.add_collision_handler(0x5, 0x6, begin=level_ok)
 
-    # Level sensor with ground
+    # Sensor de nivel con el suelo
     space.add_collision_handler(0x5, 0x7, begin=no_collision)
 
     # Bottle in with bottle sides and bottom
@@ -363,27 +363,27 @@ def runWorld():
 
         screen.fill(THECOLORS["aliceblue"])
         
-        # Manage plc
-        # Read remote/local variables
+        # Manejo PLC
+        # Lectura/variables locales
         tag_level   = plc['level'].read(LEVEL_RO_ADDR + LEVEL_TAG_SENSOR)
         tag_contact = plc['contact'].read(CONTACT_RO_ADDR + CONTACT_TAG_SENSOR)
         tag_run     = plc['server'].read(PLC_RW_ADDR + PLC_TAG_RUN) 
 
-        # Manage PLC programm
-        # Motor Logic
+        # Administracion del funcionamiento del PLC
+        # Logica del Motor
         if (tag_run == 1) and ((tag_contact == 0) or (tag_level == 1)):
             tag_motor = 1
         else:
             tag_motor = 0
 
-        # Nozzle Logic 
+        # Logica de la boquilla 
         if (tag_run == 1) and ((tag_contact == 1) and (tag_level == 0)):
             tag_nozzle = 1
         else:
             tag_nozzle = 0
 
 
-        # Write remote/local variables
+        # Escritura/variables locales
         plc['motor'].write(MOTOR_RW_ADDR + MOTOR_TAG_RUN, tag_motor)
         plc['nozzle'].write(NOZZLE_RW_ADDR + NOZZLE_TAG_RUN, tag_nozzle)
 
@@ -392,15 +392,19 @@ def runWorld():
         plc['server'].write(PLC_RO_ADDR + PLC_TAG_MOTOR, tag_motor)
         plc['server'].write(PLC_RO_ADDR + PLC_TAG_NOZZLE, tag_nozzle)
 
-        # Manage nozzle actuator : filling bottle
+        # Gestionar el actuador de la boquilla: llenado de la botella
         if nozzle['server'].read(NOZZLE_RW_ADDR + NOZZLE_TAG_RUN) == 1:
             ball_shape = add_ball(space)
             balls.append(ball_shape)
 
-        # Manage motor : move the bottles
+        # Gestionado del motor: movimiento de las botellas
         if motor['server'].read(MOTOR_RW_ADDR + MOTOR_TAG_RUN) == 1:
             for bottle in bottles:
                 bottle[0].body.position.x += 0.25
+
+        if motor['server'].read(MOTOR_RW_ADDR + MOTOR_TAG_RUN) > 1:
+            for bottle in bottles:
+                bottle[0].body.position.x -= 0.25
 
         # Draw water balls
         # Remove off-screen balls
