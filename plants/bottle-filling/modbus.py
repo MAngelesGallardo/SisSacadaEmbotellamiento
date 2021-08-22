@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-#########################################
-# Imports
-#########################################
 # - Modbus protocol
 from pymodbus.client.sync   import ModbusTcpClient
 from pymodbus.server.async  import ModbusServerFactory
@@ -12,10 +9,6 @@ from pymodbus.datastore     import ModbusSlaveContext, ModbusServerContext
 from pymodbus.exceptions    import ConnectionException 
 from pymodbus.transaction   import ModbusSocketFramer
 
-#########################################
-# Modbus code
-#########################################
-# Global Variables
 MODBUS_PORT = 502
 
 class ClientModbus(ModbusTcpClient):

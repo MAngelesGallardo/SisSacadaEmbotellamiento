@@ -14,9 +14,6 @@ from modbus	    import ConnectionException
 # - World environement
 from world          import *
 
-#########################################
-# HMI code
-#########################################
 # "Constants"
 HMI_SCREEN_WIDTH = 20
 HMI_SLEEP        = 1

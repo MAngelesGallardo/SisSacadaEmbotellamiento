@@ -22,7 +22,6 @@ from    modbus              import ClientModbus as Client
 
 #########################################
 # Logging
-#########################################
 logging.basicConfig()
 log = logging.getLogger()
 log.setLevel(logging.INFO)
@@ -100,7 +99,7 @@ def to_pygame(p):
     """Small hack to convert pymunk to pygame coordinates"""
     return int(p.x), int(-p.y+600)
 
-# Shape functions
+# functions
 def add_ball(space):
     mass    = 0.01
     radius  = 3
