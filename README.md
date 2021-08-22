@@ -7,6 +7,7 @@ The program works by running the command ./start.sh in which the hmi.py and word
 The operation of the system consists of two windows, one that simulates the controls, HMI, run for starting and stop for stopping.
 
 Install 
+
 To install all the pip packages using our provided require.txt file:
 
 pip install <requirements.txt
